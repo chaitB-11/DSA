@@ -1,38 +1,133 @@
-//3. Implement binary search algorithm if array is sorted in descending order.
+//3.. Implement circular queue operations. To check empty and full use count of elements present in queue.
 
 #include<stdio.h>
-#define SIZE 9
+#include<stdlib.h>
+#define SIZE 5
 
-int binary_search(int arr[SIZE],int key);
-int main(){
-    int key;
-    int arr[SIZE] = {99,88,77,66,55,44,33,22,11};
-    printf("Enter a key to be searche : ");
-    scanf("%d",&key);
+typedef struct queue
+{
+    int arr[SIZE];
+    int rear;
+    int front;
+}queue;
+int count =0;
 
-    int index = binary_search(arr,key);
-    if(index == -1)
-        printf("Key not found.\n");
-    else
-        printf("key found at index : %d\n",index);
+void init_queue(queue *pq);
+void enqueue(int data,queue *pq);
+void dequeue(queue *pq);
+int queue_empty(queue *pq);
+int queue_full(queue *pq);
+int peek(queue *pq);
 
+int main()
+{
+    queue Q;
+    init_queue(&Q);
 
+    int choice;
+do{
+
+    printf("0.Exit\n1.Enqueue\n2.Dequeue\n3.Peek:\n");
+    printf("Enter your choice:");
+    scanf("%d",&choice);
+
+    switch(choice)
+    {
+        case 0 :
+                exit(0);
+        case 1: // enqueue 
+                if(queue_full(&Q)) // if(0)
+                {
+                    printf("Queue is Full !\n");
+                }
+                else
+                {
+                    int data;
+                    printf("Enter the data to insert in the Q :");
+                    scanf("%d",&data);
+                    enqueue(data,&Q);
+                    printf("Data entered = %d\n",data);
+                }
+                break;
+        case 2: // dequeue 
+                if(queue_empty(&Q)) // if(0)
+                {
+                    printf("Q is empty !\n");
+                }
+                else
+                {
+                    int val = peek(&Q); // 10
+                    dequeue(&Q);
+                    printf("Value deleted = %d\n",val);
+                }
+                break;
+    case 3 : // peek
+            if(queue_empty(&Q))
+                printf("Q is empty ! Peek not Possible !\n");
+            else
+            {
+                int val = peek(&Q);
+                printf("FrontMost element = %d\n",val);
+            }
+            break;
+    default :
+            printf("Invalid choice. ");
+    }
+}while(choice != 0);
     return 0;
 }
 
-int binary_search(int arr[SIZE],int key){
+void init_queue(queue *pq)
+{
+    pq->rear = -1;
+    pq->front = -1;
+}
 
-    int left =0, right=SIZE-1,mid;
-    while(left <= right){
-        mid = (left+right)/2;
-        if(key == arr[mid])
-            return mid;
-        if(key>arr[mid]){
-            right = mid-1;
-        }
-        else
-            left = mid+1;
+void enqueue(int data,queue *pq)
+{
+    // 1. increment the rear
+    pq->rear = (pq->rear+1) % SIZE; // instead of pq->rear++
+
+    pq->arr[pq->rear] = data;
+    count++;
+
+    if(pq->front == -1)
+        pq->front = 0;
+}
+
+void dequeue(queue *pq)
+{
+    if(pq->front == pq->rear) // deleting the last element
+    {
+        pq->arr[pq->front] = 0;
+        pq->rear = -1; // reset the front and rear to start the queue again
+        pq->front = -1;
     }
-    return -1;    
+    else
+    {
+        pq->arr[pq->front] = 0;
+        count--;
+        pq->front = (pq->front+1) % SIZE; // instead of front++
+    }
+}
 
+int peek(queue *pq)
+{
+    return pq->arr[pq->front];
+}
+
+int queue_empty(queue *pq)
+{
+    if(count == 0)
+        return 1;
+    else
+        return 0;
+}
+
+int queue_full(queue *pq)
+{
+    if(count == SIZE)
+        return 1;
+    else
+        return 0;
 }
